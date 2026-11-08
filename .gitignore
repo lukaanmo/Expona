@@ -1,0 +1,9 @@
+node_modules/
+release/
+desktop-smoke.json
+.build-cache/
+.agents/
+skills-lock.json
+.env
+.env.*
+*.log

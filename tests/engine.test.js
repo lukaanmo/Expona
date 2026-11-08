@@ -1,0 +1,7 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {allocate,available,reconcile,cents,saved,nextPay,needs} from '../dist/engine.js';
+const make=()=>({accounts:[{balance:100000}],goals:[{name:'目标',target:20000,saved:0,priority:1}],bills:[],monthly:0,payday:10,living:0,reserve:0,reserveTarget:10000,free:0,freeTarget:5000,growth:0});
+test('分配守恒，按优先级安排且不修改原始状态',()=>{const s=make(),p=allocate(s);assert.equal(p.state.reserve,10000);assert.equal(p.state.goals[0].saved,20000);assert.equal(p.state.growth,65000);assert.equal(available(p.state),0);assert.equal(saved(s),0);assert.deepEqual(allocate(p.state).changes,[])});
+test('核对先扣自由支配，不自动动用储蓄，缺口阻止分配',()=>{const s=allocate(make()).state;const n=reconcile(s,[10000]);assert.equal(n.free,0);assert.equal(saved(n),saved(s));assert.equal(available(n),-85000);assert.throws(()=>allocate(n))});
+test('转账不产生收入或消费',()=>{const s=make();s.accounts=[{balance:60000},{balance:40000}];const n=reconcile(s,[30000,70000]);assert.equal(available(n),available(s))});
+test('资金不足时只填补必要支出',()=>{const s=make();s.monthly=10000000;const p=allocate(s,new Date(2026,10,8));assert.equal(p.state.living,100000);assert.equal(p.state.reserve,0);assert(p.shortfall>0)});
+test('金额与月末日期',()=>{assert.equal(cents('0.29'),29);assert.throws(()=>cents(-1));assert.throws(()=>cents('bad'));assert.equal(nextPay(31,new Date(2026,1,1)).getDate(),28);const s=make();s.monthly=300000;assert.equal(needs(s,new Date(2026,10,8)),20000)});

@@ -1,0 +1,38 @@
+{
+  "name": "expona",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.js",
+    "desktop": "electron .",
+    "build:exe": "electron-builder --win portable --x64"
+  },
+  "version": "0.2.0",
+  "description": "Expona local savings planner",
+  "author": "Expona",
+  "main": "desktop/main.cjs",
+  "build": {
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "portable",
+      "signAndEditExecutable": false
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/**/*",
+      "package.json"
+    ],
+    "productName": "Expona",
+    "appId": "com.expona.wallet",
+    "portable": {
+      "artifactName": "Expona-${version}-Windows-x64.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  }
+}
